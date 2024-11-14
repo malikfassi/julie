@@ -1,0 +1,15 @@
+<template id="costs-template">
+    <header>
+        <h2>Estimated Total Costs</h2>
+        <ul>
+            <li v-for="cost in costs" :key="cost.type">
+                <strong>{{ cost.type }}:</strong>
+                <ul>
+                    <li v-for="detail in cost.details" :key="detail">{{ detail }}</li>
+                </ul>
+            </li>
+        </ul>
+        <p><strong>Grand Total Estimated Cost:</strong> {{ totalCost }}</p>
+        <p><strong>Note:</strong> These estimates are based on average costs and can vary depending on personal preferences and spending habits. It’s advisable to have a contingency fund for unexpected expenses.</p>
+    </header>
+</template>

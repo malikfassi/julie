@@ -25,7 +25,9 @@ new Vue({
             this.cities.forEach(city => {
                 city.daysDetails.forEach(day => {
                     day.activities.forEach(activity => {
-                        total += parseFloat(activity.price.replace('€', ''));
+                        if (activity.price && typeof activity.price === 'string') {
+                            total += parseFloat(activity.price.replace('€', ''));
+                        }
                     });
                 });
             });
@@ -34,5 +36,23 @@ new Vue({
     },
     mounted() {
         this.calculateTotalCost();
+        console.log('Cities:', this.cities);
+        console.log('Costs:', this.costs);
     }
 });
+
+function loadTemplate(url, id) {
+    fetch(url)
+        .then(response => response.text())
+        .then(template => {
+            const div = document.createElement('div');
+            div.innerHTML = template;
+            document.body.appendChild(div);
+        })
+        .catch(error => console.error('Error loading template:', error));
+}
+
+loadTemplate('components/header.html', 'header-template');
+loadTemplate('components/overview.html', 'overview-template');
+loadTemplate('components/city.html', 'city-template');
+loadTemplate('components/costs.html', 'costs-template');

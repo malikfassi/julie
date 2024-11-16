@@ -1,0 +1,14 @@
+<template id="city-template">
+    <section :id="city.id">
+        <h2>{{ city.name }} ({{ city.days }} Days)</h2>
+        <div v-for="(day, index) in city.daysDetails" :key="index" class="day">
+            <h3>Day {{ index + 1 }}</h3>
+            <ul>
+                <li v-for="activity in day.activities" :key="activity.description">
+                    <strong>{{ activity.time }}:</strong> {{ activity.description }} - {{ activity.price || 'Free' }}
+                </li>
+            </ul>
+            <img :src="day.image" :alt="city.name">
+        </div>
+    </section>
+</template>

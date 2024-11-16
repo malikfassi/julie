@@ -1,15 +1,17 @@
 :root {
-  --primary-color: #4a90e2;
-  --success-color: #2ecc71;
-  --text-primary: #2c3e50;
-  --text-secondary: #666;
-  --bg-light: #f8f9fa;
-  --border-color: #f0f0f0;
+  --primary-color: #ffb6c1; /* Light Pink */
+  --secondary-color: #ff69b4; /* Hot Pink */
+  --accent-color: #ffd700; /* Gold */
+  --background-color: #fffaf0; /* Floral White */
+  --text-primary: #2c3e50; /* Dark Blue */
+  --text-secondary: #666; /* Gray */
+  --bg-light: #f8f9fa; /* Light Gray */
+  --border-color: #f0f0f0; /* Light Border */
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f5f7fa;
+  font-family: 'Comic Sans MS', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-color);
   color: var(--text-primary);
   line-height: 1.6;
   margin: 0;
@@ -29,8 +31,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .card {
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   margin: 2rem 0;
 }
@@ -44,7 +46,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .price {
-  color: var(--success-color);
+  color: var(--accent-color);
   font-weight: bold;
 }
 

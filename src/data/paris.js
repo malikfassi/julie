@@ -22,5 +22,6 @@ export const paris = {
         }
       ]
     }
-  ]
+  ],
+  image: 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_Night.jpg'
 };

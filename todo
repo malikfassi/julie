@@ -1,0 +1,19 @@
+
+Add a tag/catgeory for each activity
+
+You have to search the web for each activity, accomodations, transfers, etc ... for an estimation of the cost. 
+
+Make sure the price estimation is correct for every price.
+Make sure to include de price of everything when doing total cost. 
+The recap per city is relevant but the key numbers you chose are irrelevant. 
+
+
+
+Make the journey customizable by the user (order of cities, activities, transportation, accomodations, restaurants)
+Create a list of activities to choose from, extend it as much as possible
+based on the customization of the user, dynamically update days per cities, and total cost. 
+For now the list of existing cities is static
+add links for booking accommodations, transfers, museums, restaurants. 
+add maps
+add google maps links
+what is the url of the github page

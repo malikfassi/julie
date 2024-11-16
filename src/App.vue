@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <header-component />
-    <itinerary-overview :cities="cities" />
-    <div v-for="(city, index) in cities" :key="city.id">
+    <itinerary-overview :cities="cities" @scroll-to-city="scrollToCity" />
+    <div v-for="(city, index) in cities" :key="city.id" :ref="el => cityRefs[city.id] = el">
       <city-section :city="city" />
       <transit-activity 
         v-if="index < cities.length - 1"
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
 import HeaderComponent from './components/header.vue'
 import ItineraryOverview from './components/overview.vue'
 import CitySection from './components/city.vue'
@@ -43,7 +43,15 @@ export default {
     TransitActivity
   },
   setup() {
-    const cities = ref([rome, florence, venice, milan, lakeComo, turin, bologna])
+    const cities = ref([
+      { id: 'rome', ...rome },
+      { id: 'florence', ...florence },
+      { id: 'venice', ...venice },
+      { id: 'milan', ...milan },
+      { id: 'lake-como', ...lakeComo },
+      { id: 'turin', ...turin },
+      { id: 'bologna', ...bologna }
+    ])
     const costs = ref([
       { type: 'Accommodation', details: ['Hostels: €420', 'Airbnb: €1,040', 'Total: €1,460'] },
       { 
@@ -59,34 +67,24 @@ export default {
       { type: 'Activities and Entrance Fees', details: ['Museums and Attractions: €540', 'Local Experiences: €540', 'Total: €1,080'] },
       { type: 'Miscellaneous Expenses', details: ['Souvenirs, unexpected costs: €270'] }
     ])
-    const totalCost = ref('€4,625')
+    const cityRefs = reactive({})
 
-    const calculateTotalCost = () => {
-      let total = 0
-      cities.value.forEach(city => {
-        city.daysDetails.forEach(day => {
-          day.activities.forEach(activity => {
-            if (activity.price && typeof activity.price === 'string') {
-              total += parseFloat(activity.price.replace('€', ''))
-            }
-          })
-        })
-      })
-      transits.forEach(transit => {
-        total += parseFloat(transit.price.replace('€', ''))
-      })
-      totalCost.value = `€${total}`
+    const scrollToCity = (cityId) => {
+      const cityElement = cityRefs[cityId];
+      if (cityElement) {
+        cityElement.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.log(`City element not found for cityId: ${cityId}`);
+      }
     }
-
-    onMounted(() => {
-      calculateTotalCost()
-    })
 
     return {
       cities,
       costs,
-      totalCost,
-      transits
+      transits,
+      totalCost: '€1,925',
+      cityRefs,
+      scrollToCity
     }
   }
 }

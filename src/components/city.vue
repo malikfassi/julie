@@ -36,18 +36,11 @@
       </div>
     </div>
 
-    <div class="activities-list">
-      <button @click="toggleActivities" class="toggle-button">
-        {{ showActivities ? 'Hide Activities' : 'Show Activities' }}
-      </button>
-      <transition name="fade">
-        <div v-if="showActivities">
-          <div v-for="activity in allActivities" :key="activity.time" class="activity-item" :class="activity.category">
-            <i :class="getActivityIcon(activity.description)"></i>
-            <span>{{ activity.description }}</span>
-          </div>
-        </div>
-      </transition>
+    <div class="activities-list-inline">
+      <div v-for="activity in allActivities" :key="activity.time" class="activity-item-inline" :class="activity.category">
+        <i :class="getActivityIcon(activity.description)"></i>
+        <span>{{ activity.description }}</span>
+      </div>
     </div>
 
     <transit-activity 
@@ -226,7 +219,14 @@ export default {
 .stat.hostel { background-color: #f0e68c; }
 .stat.total { background-color: #f5deb3; }
 
-.activity-item {
+.activities-list-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.activity-item-inline {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -234,11 +234,12 @@ export default {
   border-radius: 8px;
   font-size: 0.9rem;
   color: #333;
+  background-color: #ffebcd; /* Default color */
 }
 
-.activity-item.food { background-color: #ffebcd; }
-.activity-item.attraction { background-color: #ffe4e1; }
-.activity-item.shopping { background-color: #e0ffff; }
+.activity-item-inline.food { background-color: #ffebcd; }
+.activity-item-inline.attraction { background-color: #ffe4e1; }
+.activity-item-inline.shopping { background-color: #e0ffff; }
 
 .toggle-button {
   background-color: #ffb6c1;

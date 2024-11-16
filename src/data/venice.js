@@ -2,33 +2,30 @@ export const venice = {
     id: 'venice',
     name: 'Venice',
     days: 3,
-    suggestedNeighborhood: 'Cannaregio',
+    suggestedNeighborhood: 'San Marco',
+    accommodation: {
+        type: 'Hotel',
+        pricePerNight: '€120'
+    },
+    hostel: {
+        pricePerNight: '€45'
+    },
+    otherCosts: [
+        { description: 'Local Transport', price: '€40' },
+        { description: 'Souvenirs', price: '€30' }
+    ],
     daysDetails: [
         {
             activities: [
-                { time: 'Breakfast', description: 'Pasticceria Tonolo', price: '€4' },
-                { time: 'Morning Visit', description: 'St. Mark’s Basilica', price: '€0' },
+                { time: 'Breakfast', description: 'Pasticceria Tonolo', price: '€5' },
+                { time: 'Morning Visit', description: 'Doge\'s Palace', price: '€20' },
                 { time: '11 AM Coffee', description: 'Caffè Florian', price: '€6' },
                 { time: 'Bookstore', description: 'Libreria Acqua Alta', price: '€0' },
-                { time: 'Lunch', description: 'Trattoria alla Madonna', price: '€20' },
-                { time: 'Afternoon Activity', description: 'Explore Rialto Market', price: '€0' },
-                { time: 'Museum', description: 'Peggy Guggenheim Collection', price: '€15' },
-                { time: 'Midday Snack', description: 'Cicchetti at Cantina Do Spade', price: '€8' }
+                { time: 'Lunch', description: 'Trattoria da Fiore', price: '€25' },
+                { time: 'Afternoon Activity', description: 'Gondola Ride', price: '€80' },
+                { time: 'Museum', description: 'Peggy Guggenheim Collection', price: '€15' }
             ],
-            image: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/San_Marco_Basilica.jpg'
-        },
-        {
-            activities: [
-                { time: 'Breakfast', description: 'Caffè del Doge', price: '€4' },
-                { time: 'Morning Visit', description: 'Doge’s Palace', price: '€20' },
-                { time: '11 AM Coffee', description: 'Torrefazione Cannaregio', price: '€3' },
-                { time: 'Bookstore', description: 'Libreria MarcoPolo', price: '€0' },
-                { time: 'Lunch', description: 'Osteria Bancogiro', price: '€18' },
-                { time: 'Afternoon Activity', description: 'Visit Murano Island', price: '€0' },
-                { time: 'Museum', description: 'Glass Museum', price: '€10' },
-                { time: 'Midday Snack', description: 'Gelato at Suso', price: '€4' }
-            ],
-            image: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Rialto_Market.jpg'
+            image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Venice_Canal.jpg'
         }
     ]
 };

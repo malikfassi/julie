@@ -3,6 +3,17 @@ export const florence = {
     name: 'Florence',
     days: 4,
     suggestedNeighborhood: 'Santa Croce',
+    accommodation: {
+        type: 'Hotel',
+        pricePerNight: '€90'
+    },
+    hostel: {
+        pricePerNight: '€35'
+    },
+    otherCosts: [
+        { description: 'Local Transport', price: '€40' },
+        { description: 'Souvenirs', price: '€25' }
+    ],
     daysDetails: [
         {
             activities: [

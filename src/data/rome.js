@@ -3,6 +3,17 @@ export const rome = {
     name: 'Rome',
     days: 5,
     suggestedNeighborhood: 'Trastevere',
+    accommodation: {
+        type: 'Hotel',
+        pricePerNight: '€100'
+    },
+    hostel: {
+        pricePerNight: '€40'
+    },
+    otherCosts: [
+        { description: 'Local Transport', price: '€50' },
+        { description: 'Souvenirs', price: '€30' }
+    ],
     daysDetails: [
         {
             activities: [

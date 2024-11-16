@@ -3,6 +3,17 @@ export const milan = {
     name: 'Milan',
     days: 3,
     suggestedNeighborhood: 'Brera',
+    accommodation: {
+        type: 'Hotel',
+        pricePerNight: '€110'
+    },
+    hostel: {
+        pricePerNight: '€40'
+    },
+    otherCosts: [
+        { description: 'Local Transport', price: '€35' },
+        { description: 'Souvenirs', price: '€25' }
+    ],
     daysDetails: [
         {
             activities: [

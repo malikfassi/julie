@@ -2,48 +2,19 @@
   <div class="itinerary-overview">
     <div class="overview-header">
       <h2>Journey Overview</h2>
-      <span class="total-days">{{ totalDays }} Days</span>
+      <div class="total-days">24 Days</div>
     </div>
-    
     <div class="journey-timeline-container">
       <div class="journey-timeline">
-        <!-- Starting point: Paris -->
-        <div class="city-stop">
+        <div v-for="(city, index) in cities" :key="city.id" class="city-stop">
           <div class="city-marker">
-            <div class="marker marker-start"></div>
-            <div class="city-info">
-              <h3>Paris</h3>
-              <span class="days-count">Starting Point</span>
-            </div>
+            <div class="marker" :class="{ 'marker-start': index === 0 }"></div>
+            <div>{{ city.name }}</div>
+            <div>{{ city.days }} days</div>
           </div>
-        </div>
-
-        <!-- Italian cities -->
-        <div v-for="(city, index) in cities" :key="city.id">
-          <div class="connection-line" v-if="index > 0">
-            <span class="transport-type">{{ getTransportType(index - 1) }}</span>
-          </div>
-          <div class="city-stop" @click="$emit('scroll-to-city', city.id)">
-            <div class="city-marker">
-              <div class="marker" :class="{ 'marker-start': index === 0}"></div>
-              <div class="city-info">
-                <h3>{{ city.name }}</h3>
-                <span class="days-count">{{ city.days }} days</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Return to Paris -->
-        <div class="connection-line">
-          <span class="transport-type">Flight</span>
-        </div>
-        <div class="city-stop">
-          <div class="city-marker">
-            <div class="marker marker-end"></div>
-            <div class="city-info">
-              <h3>Paris</h3>
-              <span class="days-count">Return Point</span>
+          <div v-if="index > 0 && index < cities.length" class="transport-line">
+            <div class="transport-type">
+              {{ transits[index - 1]?.type || 'N/A' }}
             </div>
           </div>
         </div>
@@ -108,6 +79,7 @@
   align-items: center;
   text-align: center;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .marker {
@@ -161,19 +133,16 @@
 
 .transport-type {
   position: absolute;
-  top: -12px;
-  left: 50%;
+  top: -20px;
+  left: -60%;
   transform: translateX(-50%);
-  background-color: var(--bg-light);
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 1;
 }
 
 .transport-type::before {
@@ -183,6 +152,14 @@
 
 .transport-type:not(:contains('Flight'))::before {
   content: '🚂';
+}
+
+.transport-line {
+  position: relative;
+  width: 100px;
+  height: 2px;
+  background-color: var(--secondary-color);
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -214,13 +191,23 @@
 </style>
 
 <script>
+import { transits } from '@/data/transits';
+
 export default {
   name: 'ItineraryOverview',
-  props: {
-    cities: {
-      type: Array,
-      required: true
-    }
+  data() {
+    return {
+      cities: [
+        { id: 'paris', name: 'Paris', days: 0 },
+        { id: 'rome', name: 'Rome', days: 5 },
+        { id: 'florence', name: 'Florence', days: 4 },
+        { id: 'venice', name: 'Venice', days: 3 },
+        { id: 'milan', name: 'Milan', days: 3 },
+        { id: 'lake-como', name: 'Lake Como', days: 3 },
+        { id: 'turin', name: 'Turin', days: 3 }
+      ],
+      transits
+    };
   },
   computed: {
     totalDays() {

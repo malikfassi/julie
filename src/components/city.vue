@@ -3,63 +3,51 @@
     <div class="city-header">
       <div class="city-main-info">
         <h2>{{ city.name }}</h2>
-        <span class="city-days">{{ city.days }} days</span>
       </div>
       
-      <!-- City Overview/Recap -->
+      <!-- Compact City Overview/Recap -->
       <div class="city-overview">
         <div class="overview-stats">
-          <div class="stat">
-            <i class="fas fa-bed"></i>
-            <span>{{ getDailyActivitiesCount('accommodation') }} Hotels</span>
+          <div class="stat days">
+            <i class="fas fa-calendar-day"></i>
+            <span>{{ city.days }} Days</span>
           </div>
-          <div class="stat">
+          <div class="stat activities">
+            <i class="fas fa-list"></i>
+            <span>{{ totalActivities }} Activities</span>
+          </div>
+          <div class="stat meal">
             <i class="fas fa-utensils"></i>
-            <span>{{ getDailyActivitiesCount('food') }} Restaurants</span>
+            <span>Avg Meal: {{ averageMealPrice }}</span>
           </div>
-          <div class="stat">
-            <i class="fas fa-monument"></i>
-            <span>{{ getDailyActivitiesCount('attraction') }} Attractions</span>
+          <div class="stat hotel">
+            <i class="fas fa-bed"></i>
+            <span>Hotel: {{ averageAccommodationPrice }}</span>
           </div>
-          <div class="stat">
+          <div class="stat hostel">
+            <i class="fas fa-bed"></i>
+            <span>Hostel: {{ averageHostelPrice }}</span>
+          </div>
+          <div class="stat total">
             <i class="fas fa-euro-sign"></i>
-            <span>{{ getTotalCityCost() }}</span>
+            <span>Total: {{ totalCityCost }}</span>
           </div>
         </div>
       </div>
-    </div>
-    
-    <p class="city-description" v-if="city.description">{{ city.description }}</p>
-    <div class="suggested-area" v-if="city.suggestedNeighborhood">
-      <i class="fas fa-map-marker-alt"></i>
-      Suggested Area: {{ city.suggestedNeighborhood }}
     </div>
 
-    <div v-for="(day, index) in city.daysDetails" :key="index" class="day-section">
-      <div class="day-header" @click="toggleDay(index)">
-        <div class="day-title">
-          <h3>Day {{ index + 1 }}</h3>
-          <span class="day-summary" v-if="!expandedDays[index]">
-            {{ getDaySummary(day) }}
-          </span>
-        </div>
-        <button class="toggle-btn" :class="{ 'expanded': expandedDays[index] }">
-          <i class="fas" :class="expandedDays[index] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-        </button>
-      </div>
-      
-      <div class="activities-list" v-show="expandedDays[index]">
-        <div v-for="activity in day.activities" :key="activity.time" class="activity-card">
-          <div class="activity-time">{{ activity.time }}</div>
-          <div class="activity-content">
-            <h4>{{ activity.description }}</h4>
-            <p v-if="activity.location" class="activity-location">
-              <i class="fas fa-location-dot"></i> {{ activity.location }}
-            </p>
+    <div class="activities-list">
+      <button @click="toggleActivities" class="toggle-button">
+        {{ showActivities ? 'Hide Activities' : 'Show Activities' }}
+      </button>
+      <transition name="fade">
+        <div v-if="showActivities">
+          <div v-for="activity in allActivities" :key="activity.time" class="activity-item" :class="activity.category">
+            <i :class="getActivityIcon(activity.description)"></i>
+            <span>{{ activity.description }}</span>
           </div>
-          <div class="activity-price" v-if="activity.price">{{ activity.price }}</div>
         </div>
-      </div>
+      </transition>
     </div>
 
     <transit-activity 
@@ -70,7 +58,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import TransitActivity from './transit-activity.vue'
 import { transits } from '../data/transits.js'
 
@@ -83,56 +71,94 @@ export default {
     city: {
       type: Object,
       required: true
-    },
-    nextCity: {
-      type: Object,
-      required: false
     }
   },
   setup(props) {
-    const expandedDays = ref({})
+    const allActivities = computed(() => {
+      return props.city.daysDetails.flatMap(day => day.activities)
+    })
 
-    const toggleDay = (index) => {
-      expandedDays.value[index] = !expandedDays.value[index]
-    }
+    const totalActivities = computed(() => {
+      return allActivities.value.length
+    })
 
-    const getDaySummary = (day) => {
-      const highlights = day.activities
-        .filter(activity => activity.description.includes('Visit') || activity.description.includes('Explore'))
-        .map(activity => activity.description.replace('Visit ', '').replace('Explore ', ''))
-        .slice(0, 2)
-      
-      return highlights.join(' • ') || 'Various activities'
-    }
+    const mealPrices = computed(() => {
+      return allActivities.value
+        .filter(activity => 
+          activity.description.includes('Breakfast') || 
+          activity.description.includes('Lunch') || 
+          activity.description.includes('Dinner') || 
+          activity.description.includes('Snack') || 
+          activity.description.includes('Coffee')
+        )
+        .map(activity => parseFloat(activity.price.replace('€', '')))
+    })
 
-    const getDailyActivitiesCount = (type) => {
-      let count = 0
-      props.city.daysDetails.forEach(day => {
-        day.activities.forEach(activity => {
-          if (activity.type === type) count++
-        })
-      })
-      return count
-    }
+    const averageMealPrice = computed(() => {
+      const prices = mealPrices.value
+      const total = prices.reduce((sum, price) => sum + price, 0)
+      return prices.length ? `€${(total / prices.length).toFixed(2)}` : 'N/A'
+    })
 
-    const getTotalCityCost = () => {
+    const averageAccommodationPrice = computed(() => {
+      return props.city.accommodation ? props.city.accommodation.pricePerNight : 'N/A'
+    })
+
+    const averageHostelPrice = computed(() => {
+      return props.city.hostel ? props.city.hostel.pricePerNight : 'N/A'
+    })
+
+    const totalCityCost = computed(() => {
       let total = 0
-      props.city.daysDetails.forEach(day => {
-        day.activities.forEach(activity => {
-          if (activity.price) {
-            total += parseInt(activity.price.replace('€', ''))
-          }
-        })
+      allActivities.value.forEach(activity => {
+        if (activity.price) {
+          total += parseFloat(activity.price.replace('€', ''))
+        }
+      })
+      total += parseFloat(props.city.accommodation.pricePerNight.replace('€', '')) * props.city.days
+      if (props.city.hostel) {
+        total += parseFloat(props.city.hostel.pricePerNight.replace('€', '')) * props.city.days
+      }
+      props.city.otherCosts.forEach(cost => {
+        total += parseFloat(cost.price.replace('€', ''))
       })
       return `€${total}`
+    })
+
+    const getActivityIcon = (description) => {
+      if (description.includes('Breakfast') || description.includes('Lunch') || description.includes('Dinner') || description.includes('Snack') || description.includes('Coffee')) {
+        return 'fas fa-utensils'
+      } else if (description.includes('Visit') || description.includes('Explore') || description.includes('Museum')) {
+        return 'fas fa-monument'
+      } else if (description.includes('Bookstore')) {
+        return 'fas fa-book'
+      } else if (description.includes('Hotel')) {
+        return 'fas fa-bed'
+      } else if (description.includes('Transport')) {
+        return 'fas fa-bus'
+      } else if (description.includes('Souvenirs')) {
+        return 'fas fa-gift'
+      } else {
+        return 'fas fa-map-marker-alt'
+      }
     }
 
+    const showActivities = ref(false);
+
+    const toggleActivities = () => {
+      showActivities.value = !showActivities.value;
+    };
+
     return {
-      expandedDays,
-      toggleDay,
-      getDaySummary,
-      getDailyActivitiesCount,
-      getTotalCityCost
+      allActivities,
+      totalActivities,
+      averageMealPrice,
+      averageAccommodationPrice,
+      averageHostelPrice,
+      totalCityCost,
+      getActivityIcon,
+      showActivities,
+      toggleActivities
     }
   },
   computed: {
@@ -162,139 +188,73 @@ export default {
   border-bottom: 2px solid var(--border-color);
 }
 
-.city-header h2 {
-  color: var(--text-primary);
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-.city-days {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.city-description {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-}
-
-.suggested-area {
-  background-color: var(--bg-light);
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-}
-
-.day-section {
-  margin: 2rem 0;
-}
-
-.day-header {
+.city-main-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: var(--bg-light);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  flex-direction: column;
 }
 
-.day-header:hover {
-  background-color: #f0e6f6; /* Light Purple */
-}
-
-.day-title {
+.city-overview {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
 }
 
-.day-title h3 {
-  color: var(--secondary-color);
-  margin: 0;
-}
-
-.day-summary {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.toggle-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
+.overview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
   padding: 0.5rem;
-  transition: transform 0.2s;
+  background-color: #fffaf0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.toggle-btn.expanded {
-  transform: rotate(180deg);
-}
-
-.activities-list {
-  margin-top: 1rem;
-  animation: slideDown 0.3s ease-out;
-}
-
-.activity-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1.5rem;
+.stat {
+  display: flex;
   align-items: center;
-  background-color: var(--bg-light);
-  padding: 1rem;
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-  transition: transform 0.2s;
-}
-
-.activity-card:hover {
-  transform: translateX(5px);
-}
-
-.activity-time {
-  color: var(--secondary-color);
-  font-weight: 500;
-  min-width: 80px;
-}
-
-.activity-content {
-  flex-grow: 1;
-}
-
-.activity-content h4 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 1.1rem;
-}
-
-.activity-location {
-  margin: 0.5rem 0 0;
-  color: var(--text-secondary);
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
   font-size: 0.9rem;
+  color: #333;
 }
 
-.activity-price {
-  color: var(--accent-color);
-  font-weight: bold;
-  font-size: 1.1rem;
+.stat.days { background-color: #ffebcd; }
+.stat.activities { background-color: #ffe4e1; }
+.stat.meal { background-color: #e0ffff; }
+.stat.hotel { background-color: #e6e6fa; }
+.stat.hostel { background-color: #f0e68c; }
+.stat.total { background-color: #f5deb3; }
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #333;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.activity-item.food { background-color: #ffebcd; }
+.activity-item.attraction { background-color: #ffe4e1; }
+.activity-item.shopping { background-color: #e0ffff; }
+
+.toggle-button {
+  background-color: #ffb6c1;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>

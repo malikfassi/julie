@@ -1,8 +1,9 @@
 <template>
   <div class="city-section" :ref="city.id">
-    <div class="city-header">
+    <div class="city-header" @click="toggleActivities">
       <div class="city-main-info">
         <h2>{{ city.name }}</h2>
+        <i :class="showActivities ? 'fas fa-angle-up' : 'fas fa-angle-down'" class="collapse-icon"></i>
       </div>
       
       <!-- Compact City Overview/Recap -->
@@ -36,12 +37,14 @@
       </div>
     </div>
 
-    <div class="activities-list-inline">
-      <div v-for="activity in allActivities" :key="activity.time" class="activity-item-inline" :class="activity.category">
-        <i :class="getActivityIcon(activity.description)"></i>
-        <span>{{ activity.description }}</span>
+    <transition name="fade">
+      <div v-if="showActivities" class="activities-list-inline">
+        <div v-for="activity in allActivities" :key="activity.time" class="activity-item-inline" :class="getActivityClass(activity.description)">
+          <i :class="getActivityIcon(activity.description)"></i>
+          <span>{{ activity.description }} - {{ activity.price || 'Free' }}</span>
+        </div>
       </div>
-    </div>
+    </transition>
 
     <transit-activity 
       v-if="nextCityTransit"
@@ -136,6 +139,18 @@ export default {
       }
     }
 
+    const getActivityClass = (description) => {
+      if (description.includes('Breakfast') || description.includes('Lunch') || description.includes('Dinner') || description.includes('Snack') || description.includes('Coffee')) {
+        return 'food'
+      } else if (description.includes('Visit') || description.includes('Explore') || description.includes('Museum')) {
+        return 'attraction'
+      } else if (description.includes('Bookstore')) {
+        return 'shopping'
+      } else {
+        return 'other'
+      }
+    }
+
     const showActivities = ref(false);
 
     const toggleActivities = () => {
@@ -150,6 +165,7 @@ export default {
       averageHostelPrice,
       totalCityCost,
       getActivityIcon,
+      getActivityClass,
       showActivities,
       toggleActivities
     }
@@ -166,24 +182,26 @@ export default {
 <style scoped>
 .city-section {
   background-color: white;
-  border-radius: 20px;
-  padding: 2rem;
-  margin: 2rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .city-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .city-main-info {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .city-overview {
@@ -194,21 +212,21 @@ export default {
 .overview-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem;
   background-color: #fffaf0;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .stat {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  gap: 0.2rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
   color: #333;
 }
 
@@ -222,33 +240,29 @@ export default {
 .activities-list-inline {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
 }
 
 .activity-item-inline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  gap: 0.3rem;
+  padding: 0.3rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
   color: #333;
-  background-color: #ffebcd; /* Default color */
 }
 
 .activity-item-inline.food { background-color: #ffebcd; }
 .activity-item-inline.attraction { background-color: #ffe4e1; }
 .activity-item-inline.shopping { background-color: #e0ffff; }
+.activity-item-inline.other { background-color: #f5f5f5; }
 
-.toggle-button {
-  background-color: #ffb6c1;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 1rem;
+.collapse-icon {
+  font-size: 0.8rem;
+  color: #999;
+  transition: transform 0.3s;
 }
 
 .fade-enter-active, .fade-leave-active {
